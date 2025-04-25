@@ -5,7 +5,7 @@
 2. Implement `Run` and/or `RunAsync` methods.
 3. Register tests that need to be run with the default DI: `builder.Services.AddTransient<ITest, FooBarTest>();`
 4. Register the default test runner: `builder.Services.AddTestRunner();`
-5. Inject `ITestRunner` into your health check class and call runner.RunAsync() or runner.Run() to run all tests.
+5. Inject `ITestRunner` into your health check class and call runner.Start() or runner.StartAsync() to run all tests.
 
 ## Note
 - Non-registered tests will not be run, this mechanism can be used to specify needed tests per services.
