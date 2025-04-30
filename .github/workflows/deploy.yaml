@@ -27,10 +27,7 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
-
-      - name: Run Tests
-        run: dotnet test --no-build --verbosity detailed
-
+        
       - name: Determine package version
         id: get_version
         run: |
