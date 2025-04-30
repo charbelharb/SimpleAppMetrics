@@ -40,7 +40,7 @@ jobs:
           fi
 
       - name: Pack NuGet package
-        run: dotnet pack ./SimpleAppMetrics/SimpleAppMetrics.csproj --no-build --configuration Release --output ./nupkgs /p:PackageVersion=${{ steps.get_version.outputs.version }}
+        run: dotnet pack ./SimpleAppMetrics/SimpleAppMetrics.csproj --configuration Release --output ./nupkgs /p:PackageVersion=${{ steps.get_version.outputs.version }}
 
       - name: Push NuGet package
         run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
