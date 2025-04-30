@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace TestPlatform;
+namespace SimpleAppMetrics;
 
 public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
 {

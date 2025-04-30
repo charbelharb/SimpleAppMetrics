@@ -1,26 +1,20 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace TestPlatform.UnitTests.MockTests;
+namespace SimpleAppMetrics.UnitTests.MockTests;
 
 [ExcludeFromCodeCoverage]
-public class TuringTest : ITest
+public class TheAlwaysThrowingExceptionTest : ITest
 {
     public ITestResult Run()
     {
-        return new DefaultTestResult
-        {
-            WhoAmI = nameof(TuringTest)
-        };
+        throw new Exception("Not today");
     }
 
     public async Task<ITestResult> RunAsync(CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(new DefaultTestResult
-        {
-            WhoAmI = nameof(TuringTest)
-        });
+       throw new Exception("Not today");
     }
-
+    
     public bool IsDisposed { get; private set; }
 
     public void Dispose()

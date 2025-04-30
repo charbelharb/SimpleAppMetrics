@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace TestPlatform.UnitTests.MockTests;
+namespace SimpleAppMetrics.UnitTests.MockTests;
 
 [ExcludeFromCodeCoverage]
 public class FooBarTest : ITest

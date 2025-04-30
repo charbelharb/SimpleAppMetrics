@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using TestPlatform.UnitTests.MockTests;
+using SimpleAppMetrics.UnitTests.MockTests;
 
-namespace TestPlatform.UnitTests;
+namespace SimpleAppMetrics.UnitTests;
 
 public class DefaultTestRunnerTests
 {

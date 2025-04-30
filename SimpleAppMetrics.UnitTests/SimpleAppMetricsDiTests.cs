@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace TestPlatform.UnitTests;
+namespace SimpleAppMetrics.UnitTests;
 
-public class TestPlatformDiTests
+public class SimpleAppMetricsDiTests
 {
     [Fact]
     public void Di_AddTestRunner_ShouldRegisterDefaultTestRunner()

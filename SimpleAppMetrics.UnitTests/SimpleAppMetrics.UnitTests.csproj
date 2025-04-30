@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TestPlatform\TestPlatform.csproj" />
+      <ProjectReference Include="..\SimpleAppMetrics\SimpleAppMetrics.csproj" />
     </ItemGroup>
 
 </Project>

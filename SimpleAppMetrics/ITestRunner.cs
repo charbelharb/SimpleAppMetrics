@@ -1,4 +1,4 @@
-﻿namespace TestPlatform;
+﻿namespace SimpleAppMetrics;
 
 public interface ITestRunner : IDisposable
 {

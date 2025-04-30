@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace TestPlatform;
+namespace SimpleAppMetrics;
 
 [ExcludeFromCodeCoverage]
 public class DefaultTestResult : ITestResult

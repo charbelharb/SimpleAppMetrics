@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlatform", "TestPlatform\TestPlatform.csproj", "{B4D6A386-A0A2-49D9-9D0C-D120960D44E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleAppMetrics", "SimpleAppMetrics\SimpleAppMetrics.csproj", "{2A1ACF69-4A90-4756-8378-871FF732E4A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlatform.UnitTests", "TestPlatform.UnitTests\TestPlatform.UnitTests.csproj", "{5898D764-0D95-4961-85D8-1B3CF45EBA5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleAppMetrics.UnitTests", "SimpleAppMetrics.UnitTests\SimpleAppMetrics.UnitTests.csproj", "{CB4559EA-985E-4331-8AF6-197720C4FE79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,13 @@ Global
 		{5898D764-0D95-4961-85D8-1B3CF45EBA5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5898D764-0D95-4961-85D8-1B3CF45EBA5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5898D764-0D95-4961-85D8-1B3CF45EBA5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A1ACF69-4A90-4756-8378-871FF732E4A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1ACF69-4A90-4756-8378-871FF732E4A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A1ACF69-4A90-4756-8378-871FF732E4A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A1ACF69-4A90-4756-8378-871FF732E4A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB4559EA-985E-4331-8AF6-197720C4FE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB4559EA-985E-4331-8AF6-197720C4FE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB4559EA-985E-4331-8AF6-197720C4FE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB4559EA-985E-4331-8AF6-197720C4FE79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
