@@ -2,39 +2,28 @@
 
 namespace TestPlatform;
 
-public class DefaultTestRunner : ITestRunner
+public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
 {
-    private readonly IList<ITest> _tests = new List<ITest>();
-    
-    private DefaultTestRunner()
+    public DefaultTestRunner(IServiceProvider serviceProvider) : this(serviceProvider.GetServices<ITest>().ToList())
     {
-    }
-
-    public DefaultTestRunner(IList<ITest> tests)
-    {
-        _tests = tests;
-    }
-    
-    public DefaultTestRunner(IServiceProvider serviceProvider)
-    {
-        _tests = serviceProvider.GetServices<ITest>().ToList();
     }
     
     public IList<ITestResult> Start()
     {
-        return _tests.Select(test => test.Run()).ToList();
+        LastRunResults = tests.Select(test => test.Run()).ToList();
+        return LastRunResults;
     }
 
     public async Task<IList<ITestResult>> StartAsync(CancellationToken cancellationToken = default)
     {
-        var result = await Task.WhenAll(_tests.Select(test => test.RunAsync(cancellationToken)));
-        return result.ToList();
+        LastRunResults = (await Task.WhenAll(tests.Select(test => test.RunAsync(cancellationToken)))).ToList();
+        return LastRunResults;
     }
 
     public IList<ITestResult> SafeStart()
     {
         var result = new List<ITestResult>();
-        foreach (var test in _tests)
+        foreach (var test in tests)
         {
             try
             {
@@ -51,13 +40,14 @@ public class DefaultTestRunner : ITestRunner
                 });
             }
         }
-        return result;
+        LastRunResults = result;
+        return LastRunResults;
     }
 
     public async Task<IList<ITestResult>> SafeStartAsync(CancellationToken cancellationToken = default)
     {
         var result = new List<ITestResult>();
-        foreach (var test in _tests)
+        foreach (var test in tests)
         {
             try
             {
@@ -74,15 +64,21 @@ public class DefaultTestRunner : ITestRunner
                 });
             }
         }
-        return result;
+        LastRunResults = result;
+        return LastRunResults;
     }
 
+    public IList<ITestResult> LastRunResults { get; private set; } = new List<ITestResult>();
+    
+    public bool IsDisposed { get; private set; }
+    
     public void Dispose()
     {
-        foreach (var test in _tests)
+        foreach (var test in tests)
         {
             test.Dispose();
         }
+        IsDisposed = true;
         GC.SuppressFinalize(this);
     }
 }

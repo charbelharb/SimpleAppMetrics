@@ -29,4 +29,14 @@ public interface ITestRunner : IDisposable
     /// <returns>Tests Result</returns>
     /// <exception cref="Exception">Will throw exception if not handled in tests</exception>
     Task<IList<ITestResult>> SafeStartAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// List of last run results
+    /// </summary>
+    IList<ITestResult> LastRunResults { get; }
+    
+    /// <summary>
+    /// Check if the test runner is disposed
+    /// </summary>
+    bool IsDisposed { get; }
 }

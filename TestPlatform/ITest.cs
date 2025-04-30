@@ -14,4 +14,9 @@ public interface ITest : IDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ITestResult> RunAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Check if the test is disposed
+    /// </summary>
+    bool IsDisposed { get; }
 }

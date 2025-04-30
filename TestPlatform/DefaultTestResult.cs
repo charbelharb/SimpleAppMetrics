@@ -1,5 +1,8 @@
-﻿namespace TestPlatform;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace TestPlatform;
+
+[ExcludeFromCodeCoverage]
 public class DefaultTestResult : ITestResult
 {
     public TestResultStatus Status { get; set; } = TestResultStatus.Pass;
