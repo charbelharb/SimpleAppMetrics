@@ -3,7 +3,12 @@
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*'         
+  workflow_dispatch:       
+    inputs:
+      manualVersion:
+        description: 'Override NuGet package version (optional, e.g., 1.2.3-preview)'
+        required: false
 
 jobs:
   build:
@@ -24,14 +29,21 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity detailed
 
-      - name: Get version from Git tag
+      - name: Determine package version
         id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        run: |
+          if [ -n "${{ github.event.inputs.manualVersion }}" ]; then
+            echo "Using manual version: ${{ github.event.inputs.manualVersion }}"
+            echo "version=${{ github.event.inputs.manualVersion }}" >> $GITHUB_OUTPUT
+          else
+            echo "Using tag version: ${GITHUB_REF#refs/tags/v}"
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Pack NuGet package with tag version
-        run: dotnet pack --no-build --configuration Release --output ./nupkgs /p:PackageVersion=${{ steps.get_version.outputs.version }}
+      - name: Pack NuGet package
+        run: dotnet pack ./SimpleAppMetrics/SimpleAppMetrics/SimpleAppMetrics.csproj --no-build --configuration Release --output ./nupkgs /p:PackageVersion=${{ steps.get_version.outputs.version }}
 
-      - name: Publish package to NuGet
+      - name: Push NuGet package
         run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
