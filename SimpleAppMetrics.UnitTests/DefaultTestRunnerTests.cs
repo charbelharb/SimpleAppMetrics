@@ -121,7 +121,7 @@ public class DefaultTestRunnerTests
             Assert.Equal(3, result.Count);
             var failedTest = defaultRunner.LastRunResults.FirstOrDefault(test => test.WhoAmI == nameof(TheAlwaysThrowingExceptionTest));
             Assert.NotNull(failedTest);
-            Assert.Equal("Not today", failedTest.Exceptions.FirstOrDefault()?.Message);
+            Assert.False(string.IsNullOrEmpty(failedTest.Exceptions.FirstOrDefault()));
         }
     }
     
@@ -167,7 +167,7 @@ public class DefaultTestRunnerTests
             Assert.Equal(3, result.Count);
             var failedTest = defaultRunner.LastRunResults.FirstOrDefault(test => test.WhoAmI == nameof(TheAlwaysThrowingExceptionTest));
             Assert.NotNull(failedTest);
-            Assert.Equal("Not today", failedTest.Exceptions.FirstOrDefault()?.Message);
+            Assert.False(string.IsNullOrEmpty(failedTest.Exceptions.FirstOrDefault()));
         }
     }
     

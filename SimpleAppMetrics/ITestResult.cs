@@ -17,7 +17,7 @@ public interface ITestResult
 
     public IList<string> Warnings { get; set; }
     
-    public IList<Exception> Exceptions { get; set; }
+    public IList<string> Exceptions { get; set; }
     
     public DateTime? StartDate { get; set; }
     

@@ -35,7 +35,7 @@ public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
                 result.Add(new DefaultTestResult
                 {
                     Status = TestResultStatus.Fatal,
-                    Exceptions = new List<Exception> {e},
+                    Exceptions = new List<string>{ e.ToString() },
                     WhoAmI = test.GetType().Name
                 });
             }
@@ -59,7 +59,7 @@ public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
                 result.Add(new DefaultTestResult
                 {
                     Status = TestResultStatus.Fatal,
-                    Exceptions = new List<Exception> {e},
+                    Exceptions = new List<string> { e.ToString() },
                     WhoAmI = test.GetType().Name
                 });
             }
