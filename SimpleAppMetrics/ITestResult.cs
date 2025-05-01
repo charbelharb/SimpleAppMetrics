@@ -1,8 +1,13 @@
-﻿namespace SimpleAppMetrics;
+﻿using System.Text.Json.Serialization;
+
+namespace SimpleAppMetrics;
 
 public interface ITestResult
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public TestResultStatus Status { get; set; }
+    
+    public TestResultStatus StatusCode { get; }
 
     public IList<string> SuccessMessages { get; set; }
     
