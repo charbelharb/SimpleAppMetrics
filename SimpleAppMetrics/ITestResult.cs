@@ -22,6 +22,10 @@ public interface ITestResult
     public DateTime? StartDate { get; set; }
     
     public DateTime? EndDate { get; set; }
+    
+    public TimeSpan? Elapsed { get; set; }
+    
+    public int? ElapsedMilliseconds { get; }
 
     public string WhoAmI { get; set; }
     

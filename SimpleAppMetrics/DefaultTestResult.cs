@@ -16,6 +16,8 @@ public class DefaultTestResult : ITestResult
     public IList<string> Exceptions { get; set; } = new List<string>();
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public TimeSpan? Elapsed { get; set; }
+    public int? ElapsedMilliseconds => Elapsed?.Milliseconds;
     public required string WhoAmI { get; set; }
     public object? Data { get; set; }
 }
