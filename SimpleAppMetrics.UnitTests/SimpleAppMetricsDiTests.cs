@@ -9,7 +9,7 @@ public class SimpleAppMetricsDiTests
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTestRunner();
+        serviceCollection.AddDefaultTestRunner();
         IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         
         // Act

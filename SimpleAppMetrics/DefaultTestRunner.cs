@@ -8,18 +8,21 @@ public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
     {
     }
     
+    /// <inheritdoc/>
     public IList<ITestResult> Start()
     {
         LastRunResults = tests.Select(test => test.Run()).ToList();
         return LastRunResults;
     }
 
+    /// <inheritdoc/>
     public async Task<IList<ITestResult>> StartAsync(CancellationToken cancellationToken = default)
     {
         LastRunResults = (await Task.WhenAll(tests.Select(test => test.RunAsync(cancellationToken)))).ToList();
         return LastRunResults;
     }
 
+    /// <inheritdoc/>
     public IList<ITestResult> SafeStart()
     {
         var result = new List<ITestResult>();
@@ -44,6 +47,7 @@ public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
         return LastRunResults;
     }
 
+    /// <inheritdoc/>
     public async Task<IList<ITestResult>> SafeStartAsync(CancellationToken cancellationToken = default)
     {
         var result = new List<ITestResult>();
@@ -68,8 +72,10 @@ public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
         return LastRunResults;
     }
 
+    /// <inheritdoc/>
     public IList<ITestResult> LastRunResults { get; private set; } = new List<ITestResult>();
     
+    /// <inheritdoc/>
     public bool IsDisposed { get; private set; }
     
     public void Dispose()
