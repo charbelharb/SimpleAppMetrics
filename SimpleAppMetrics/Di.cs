@@ -12,6 +12,10 @@ public static class Di
         services.AddTransient<ITestRunner, DefaultTestRunner>();
     }
     
+    /// <summary>
+    /// This will register DefaultTestRunner as Transient
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/></param>
     public static void AddDefaultTestRunner(this IServiceCollection services)
     {
         services.AddTransient<ITestRunner, DefaultTestRunner>();

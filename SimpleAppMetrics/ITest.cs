@@ -5,14 +5,14 @@ public interface ITest : IDisposable
     /// <summary>
     /// Run the test
     /// </summary>
-    /// <returns></returns>
+    /// <returns>An <see cref="ITestResult"/></returns>
     ITestResult Run();
     
     /// <summary>
     /// Run Asynchronously
     /// </summary>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>A <see cref="Task"/> of <see cref="ITestResult"/></returns>
     Task<ITestResult> RunAsync(CancellationToken cancellationToken = default);
     
     /// <summary>
