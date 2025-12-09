@@ -5,8 +5,10 @@
         <AssemblyName>SimpleAppMetrics</AssemblyName>
         <RootNamespace>SimpleAppMetrics</RootNamespace>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
