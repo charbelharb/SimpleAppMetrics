@@ -178,9 +178,11 @@ public class DefaultTestRunnerTests
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddTransient<ITest, FooBarTest>();
         serviceCollection.AddTransient<ITest, TuringTest>();
+        serviceCollection.AddDefaultTestRunner();
         IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-        var defaultRunner = new DefaultTestRunner(serviceProvider);
-
+        var defaultRunner = serviceProvider.GetService<ITestRunner>();
+        
+        Assert.NotNull(defaultRunner);
         using (defaultRunner)
         {
             // Act

@@ -5,7 +5,7 @@ namespace SimpleAppMetrics.UnitTests;
 public class SimpleAppMetricsDiTests
 {
     [Fact]
-    public void Di_AddTestRunner_ShouldRegisterDefaultTestRunner()
+    public void Di_AddDefaultTestRunner_ShouldRegisterDefaultTestRunner()
     {
         // Arrange
         var serviceCollection = new ServiceCollection();

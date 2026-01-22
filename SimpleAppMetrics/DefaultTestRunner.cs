@@ -1,13 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace SimpleAppMetrics;
 
-namespace SimpleAppMetrics;
-
-public class DefaultTestRunner(IList<ITest> tests) : ITestRunner
+public class DefaultTestRunner(IEnumerable<ITest> tests) : ITestRunner
 {
-    public DefaultTestRunner(IServiceProvider serviceProvider) : this(serviceProvider.GetServices<ITest>().ToList())
-    {
-    }
-    
     /// <inheritdoc/>
     public IList<ITestResult> Start()
     {
