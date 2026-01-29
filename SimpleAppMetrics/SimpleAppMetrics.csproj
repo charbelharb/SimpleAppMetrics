@@ -5,14 +5,14 @@
         <AssemblyName>SimpleAppMetrics</AssemblyName>
         <RootNamespace>SimpleAppMetrics</RootNamespace>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>Readme.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.2" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\Readme.md">
+      <Content Include="..\Readme.md" Pack="true" PackagePath="\">
         <Link>Readme.md</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
