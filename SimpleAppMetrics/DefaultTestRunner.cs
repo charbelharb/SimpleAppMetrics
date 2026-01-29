@@ -32,6 +32,7 @@ public class DefaultTestRunner(IEnumerable<ITest> tests) : ITestRunner
                 result.Add(new DefaultTestResult
                 {
                     Status = TestResultStatus.Fatal,
+                    ExceptionObjects =  new List<Exception> { e },
                     Exceptions = new List<string>{ e.ToString() },
                     WhoAmI = test.GetType().Name
                 });
@@ -44,25 +45,24 @@ public class DefaultTestRunner(IEnumerable<ITest> tests) : ITestRunner
     /// <inheritdoc/>
     public async Task<IList<ITestResult>> SafeStartAsync(CancellationToken cancellationToken = default)
     {
-        var result = new List<ITestResult>();
-        foreach (var test in tests)
+        var tasks = tests.Select(async test =>
         {
             try
             {
-                var testResult = await test.RunAsync(cancellationToken);
-                result.Add(testResult);
+                return await test.RunAsync(cancellationToken);
             }
             catch (Exception e)
             {
-                result.Add(new DefaultTestResult
+                return new DefaultTestResult
                 {
                     Status = TestResultStatus.Fatal,
+                    ExceptionObjects =  new List<Exception> { e },
                     Exceptions = new List<string> { e.ToString() },
                     WhoAmI = test.GetType().Name
-                });
+                };
             }
-        }
-        LastRunResults = result;
+        });
+        LastRunResults = (await Task.WhenAll(tasks)).ToList();
         return LastRunResults;
     }
 
