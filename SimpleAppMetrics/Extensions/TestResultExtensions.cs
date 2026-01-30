@@ -1,4 +1,4 @@
-namespace SimpleAppMetrics;
+namespace SimpleAppMetrics.Extensions;
 
 /// <summary>
 /// Extension methods for ITestResult

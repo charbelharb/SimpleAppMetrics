@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using SimpleAppMetrics.Extensions;
 
 namespace SimpleAppMetrics;
 

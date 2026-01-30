@@ -1,3 +1,5 @@
+using SimpleAppMetrics.Extensions;
+
 namespace SimpleAppMetrics.UnitTests;
 
 public class TestResultExtensionsTests

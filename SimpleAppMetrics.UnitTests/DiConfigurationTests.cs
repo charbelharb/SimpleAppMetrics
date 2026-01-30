@@ -44,7 +44,7 @@ public class DiConfigurationTests
     }
 
     [Fact]
-    public void AddDefaultTestRunner_WithOptions_ConfiguresCorrectly()
+    public void AddDefaultTestRunner_WithOptionsDelegate_ConfiguresCorrectly()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -53,7 +53,28 @@ public class DiConfigurationTests
         services.AddDefaultTestRunner(options =>
         {
             options.UseTestResultHelper = true;
+            options.EnableLogging = true;
+            options.EnableOpenTelemetry = true;
         });
+
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        Assert.NotNull(provider.GetService<TestResultHelper>());
+    }
+    
+    [Fact]
+    public void AddDefaultTestRunner_WithOptions_ConfiguresCorrectly()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddDefaultTestRunner()
+            .WithTestResultHelper()
+            .WithLogging()
+            .WithOpenTelemetry()
+            .Build();
 
         var provider = services.BuildServiceProvider();
 

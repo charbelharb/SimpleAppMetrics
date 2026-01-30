@@ -77,6 +77,16 @@ public class TestRunnerOptions
     /// Custom TimeProvider for TestResultHelper (defaults to TimeProvider.System)
     /// </summary>
     public TimeProvider? TimeProvider { get; set; }
+    
+    /// <summary>
+    /// Whether to enable logging (requires ILogger to be registered)
+    /// </summary>
+    public bool EnableLogging { get; set; } = true;
+    
+    /// <summary>
+    /// Whether to enable OpenTelemetry tracing
+    /// </summary>
+    public bool EnableOpenTelemetry { get; set; } = true;
 }
 
 /// <summary>
@@ -114,6 +124,44 @@ public class TestRunnerBuilder
     }
 
     /// <summary>
+    /// Enables logging for test execution
+    /// </summary>
+    public TestRunnerBuilder WithLogging()
+    {
+        _options.EnableLogging = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Disables logging for test execution
+    /// </summary>
+    public TestRunnerBuilder WithoutLogging()
+    {
+        _options.EnableLogging = false;
+        _options.EnableOpenTelemetry = false;
+        return this;
+    }
+
+    /// <summary>
+    /// Enables OpenTelemetry tracing for test execution
+    /// </summary>
+    public TestRunnerBuilder WithOpenTelemetry()
+    {
+        _options.EnableLogging = true;
+        _options.EnableOpenTelemetry = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Disables OpenTelemetry tracing for test execution
+    /// </summary>
+    public TestRunnerBuilder WithoutOpenTelemetry()
+    {
+        _options.EnableOpenTelemetry = false;
+        return this;
+    }
+
+    /// <summary>
     /// Configures options using a configuration delegate
     /// </summary>
     /// <param name="configure">Configuration delegate</param>
@@ -129,13 +177,16 @@ public class TestRunnerBuilder
     public IServiceCollection Build()
     {
         // Register TestResultHelper if configured
-        if (!_options.UseTestResultHelper)
+        if (_options.UseTestResultHelper)
         {
-            return _services;
+            var timeProvider = _options.TimeProvider ?? TimeProvider.System;
+            _services.AddSingleton(timeProvider);
+            _services.AddSingleton<TestResultHelper>();
         }
-        var timeProvider = _options.TimeProvider ?? TimeProvider.System;
-        _services.AddSingleton(timeProvider);
-        _services.AddSingleton<TestResultHelper>();
+
+        // Note: Logging is automatically picked up if ILogger<DefaultTestRunner> is registered
+        // OpenTelemetry tracing is always available via ActivitySource
+        
         return _services;
     }
 

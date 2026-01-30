@@ -10,6 +10,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.2" />
+      <PackageReference Include="OpenTelemetry" Version="1.15.0" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\Readme.md" Pack="true" PackagePath="\">
