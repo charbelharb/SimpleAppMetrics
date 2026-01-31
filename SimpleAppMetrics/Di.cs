@@ -33,8 +33,7 @@ public static class Di
         Action<TestRunnerOptions> configure)
     {
         var builder = services.AddDefaultTestRunner();
-        builder.WithOptions(configure);
-        return builder.Build();
+        return builder.WithOptions(configure).Build();
     }
 
     /// <summary>
@@ -77,16 +76,6 @@ public class TestRunnerOptions
     /// Custom TimeProvider for TestResultHelper (defaults to TimeProvider.System)
     /// </summary>
     public TimeProvider? TimeProvider { get; set; }
-    
-    /// <summary>
-    /// Whether to enable logging (requires ILogger to be registered)
-    /// </summary>
-    public bool EnableLogging { get; set; } = true;
-    
-    /// <summary>
-    /// Whether to enable OpenTelemetry tracing
-    /// </summary>
-    public bool EnableOpenTelemetry { get; set; } = true;
 }
 
 /// <summary>
@@ -122,45 +111,7 @@ public class TestRunnerBuilder
         _options.TimeProvider = timeProvider;
         return this;
     }
-
-    /// <summary>
-    /// Enables logging for test execution
-    /// </summary>
-    public TestRunnerBuilder WithLogging()
-    {
-        _options.EnableLogging = true;
-        return this;
-    }
-
-    /// <summary>
-    /// Disables logging for test execution
-    /// </summary>
-    public TestRunnerBuilder WithoutLogging()
-    {
-        _options.EnableLogging = false;
-        _options.EnableOpenTelemetry = false;
-        return this;
-    }
-
-    /// <summary>
-    /// Enables OpenTelemetry tracing for test execution
-    /// </summary>
-    public TestRunnerBuilder WithOpenTelemetry()
-    {
-        _options.EnableLogging = true;
-        _options.EnableOpenTelemetry = true;
-        return this;
-    }
-
-    /// <summary>
-    /// Disables OpenTelemetry tracing for test execution
-    /// </summary>
-    public TestRunnerBuilder WithoutOpenTelemetry()
-    {
-        _options.EnableOpenTelemetry = false;
-        return this;
-    }
-
+    
     /// <summary>
     /// Configures options using a configuration delegate
     /// </summary>

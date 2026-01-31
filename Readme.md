@@ -15,8 +15,8 @@ A lightweight, flexible C# library for running health checks and collecting metr
 - ✅ Fluent configuration API
 - ✅ Dependency injection ready
 - ✅ Fully async/await compatible
-- ✅ Optional ILogger integration
-- ✅ OpenTelemetry distributed tracing support
+- ✅ Automatic ILogger integration (v2.1.0+)
+- ✅ Built-in OpenTelemetry distributed tracing support (v2.1.0+)
 
 ## Installation
 
@@ -82,9 +82,8 @@ builder.Services.AddTransient<ITest, DatabaseHealthCheck>();
 builder.Services.AddTransient<ITest, ApiHealthCheck>();
 builder.Services.AddTransient<ITest, CacheHealthCheck>();
 
-// Register test runner with optional helpers
-builder.Services
-    .AddDefaultTestRunner()
+// Register test runner
+builder.Services.AddDefaultTestRunner()
     .WithTestResultHelper()
     .Build();
 ```
@@ -125,90 +124,9 @@ builder.Services.AddDefaultTestRunner();
 
 ```csharp
 // Adds timing utilities and helper methods
-builder.Services
-    .AddDefaultTestRunner()
+builder.Services.AddDefaultTestRunner()
     .WithTestResultHelper()
     .Build();
-```
-
-### With Logging (v2.1.0+)
-
-```csharp
-// Enable logging (requires Microsoft.Extensions.Logging)
-builder.Services.AddLogging(logging =>
-{
-    logging.AddConsole();
-    logging.SetMinimumLevel(LogLevel.Information);
-});
-
-builder.Services
-    .AddDefaultTestRunner()
-    .WithTestResultHelper()
-    .WithLogging()  // Enable structured logging
-    .Build();
-```
-
-### With OpenTelemetry (v2.1.0+)
-
-```csharp
-// Install: dotnet add package OpenTelemetry.Exporter.Console
-// Install: dotnet add package OpenTelemetry.Extensions.Hosting
-
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddConsoleExporter());
-
-builder.Services
-    .AddDefaultTestRunner()
-    .WithTestResultHelper()
-    .WithOpenTelemetry()  // Enable distributed tracing
-    .Build();
-```
-
-### Complete Configuration with Logging and OpenTelemetry
-
-```csharp
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Configure logging
-builder.Services.AddLogging(logging =>
-{
-    logging.AddConsole();
-    logging.AddDebug();
-    logging.SetMinimumLevel(LogLevel.Information);
-});
-
-// Configure OpenTelemetry
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource
-        .AddService("MyHealthCheckService", serviceVersion: "1.0.0"))
-    .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddConsoleExporter()
-        .AddOtlpExporter());  // Send to Jaeger, Zipkin, etc.
-
-// Register tests
-builder.Services.AddTransient<ITest, DatabaseHealthCheck>();
-builder.Services.AddTransient<ITest, RedisHealthCheck>();
-
-// Configure SimpleAppMetrics with all features
-builder.Services
-    .AddDefaultTestRunner()
-    .WithTestResultHelper()
-    .WithLogging()
-    .WithOpenTelemetry()
-    .Build();
-
-var app = builder.Build();
-app.Run();
 ```
 
 ### With Custom TimeProvider (for testing)
@@ -216,8 +134,7 @@ app.Run();
 ```csharp
 var fakeTimeProvider = new FakeTimeProvider();
 
-builder.Services
-    .AddDefaultTestRunner()
+builder.Services.AddDefaultTestRunner()
     .WithTestResultHelper(fakeTimeProvider)
     .Build();
 ```
@@ -228,8 +145,6 @@ builder.Services
 builder.Services.AddDefaultTestRunner(options =>
 {
     options.UseTestResultHelper = true;
-    options.EnableLogging = true;
-    options.EnableOpenTelemetry = true;
     options.TimeProvider = TimeProvider.System;
 });
 ```
@@ -244,13 +159,176 @@ builder.Services.AddTestResultHelper();
 builder.Services.AddTestResultHelper(customTimeProvider);
 ```
 
+## Logging (v2.1.0+)
+
+**Logging is automatically enabled if `ILogger` is registered in your application.** SimpleAppMetrics will detect and use it without any additional configuration.
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Register logging (standard ASP.NET Core)
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.SetMinimumLevel(LogLevel.Information);
+});
+
+// Register SimpleAppMetrics - logging will be automatically injected
+builder.Services.AddDefaultTestRunner()
+    .WithTestResultHelper()
+    .Build();
+```
+
+### Logging Output
+
+When logging is configured, you'll see structured logs like:
+
+```
+[12:00:00 INF] Starting test execution for 3 tests
+[12:00:00 DBG] Executing test: DatabaseHealthCheck
+[12:00:00 INF] Test DatabaseHealthCheck completed with status Pass in 150ms
+[12:00:00 DBG] Executing test: RedisHealthCheck
+[12:00:00 ERR] Test RedisHealthCheck completed with status Fail in 200ms
+[12:00:00 ERR] Test RedisHealthCheck exception: System.TimeoutException: Connection timeout
+[12:00:00 DBG] Executing test: ApiHealthCheck
+[12:00:00 INF] Test ApiHealthCheck completed with status Pass in 100ms
+[12:00:01 INF] Test run completed: 3 total, 2 passed, 1 failed, 0 fatal in 450ms
+```
+
+Log levels are automatically selected based on test status:
+- **Critical**: Fatal errors
+- **Error**: Failed tests, exceptions
+- **Warning**: Degraded performance, warnings
+- **Information**: Successful tests, summaries
+- **Debug**: Test execution details
+
+## OpenTelemetry (v2.1.0+)
+
+**OpenTelemetry tracing is automatically enabled when you configure it in your application.** SimpleAppMetrics uses the built-in .NET `ActivitySource` API for distributed tracing - no external dependencies required.
+
+### Setup OpenTelemetry
+
+```csharp
+// Install OpenTelemetry packages (in your application):
+// dotnet add package OpenTelemetry.Exporter.Console
+// dotnet add package OpenTelemetry.Extensions.Hosting
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddConsoleExporter());
+
+// Register SimpleAppMetrics - tracing will work automatically
+builder.Services.AddDefaultTestRunner()
+    .WithTestResultHelper()
+    .Build();
+```
+
+### Trace Output
+
+When configured, each test run creates distributed traces:
+
+```
+Trace: TestRunner.SafeStartAsync (450ms)
+├── Test.DatabaseHealthCheck (150ms)
+│   └── Tags: test.name=DatabaseHealthCheck, test.status=Pass, test.duration_ms=150
+├── Test.RedisHealthCheck (200ms)
+│   └── Tags: test.name=RedisHealthCheck, test.status=Fail, test.duration_ms=200
+└── Test.ApiHealthCheck (100ms)
+    └── Tags: test.name=ApiHealthCheck, test.status=Pass, test.duration_ms=100
+```
+
+**Activity Source Details:**
+- Name: `"SimpleAppMetrics"`
+- Version: `"2.1.0"`
+
+### Supported APM Tools
+
+View traces in:
+- **Jaeger**: http://localhost:16686
+- **Zipkin**: http://localhost:9411
+- **Azure Application Insights**
+- **AWS X-Ray**
+- **Google Cloud Trace**
+- **Datadog**
+- **New Relic**
+- **Elastic APM**
+
+### Complete OpenTelemetry Example
+
+```csharp
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry with OTLP exporter (Jaeger, Zipkin, etc.)
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("MyHealthCheckService", serviceVersion: "1.0.0"))
+    .WithTracing(tracing => tracing
+        .AddSource("SimpleAppMetrics")        // SimpleAppMetrics traces
+        .AddAspNetCoreInstrumentation()       // HTTP request traces
+        .AddHttpClientInstrumentation()       // HTTP client traces
+        .AddOtlpExporter(options =>           // Export to APM tool
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+        }));
+
+// Register tests and runner
+builder.Services.AddTransient<ITest, DatabaseHealthCheck>();
+builder.Services.AddDefaultTestRunner();
+```
+
+## Complete Configuration Example (Logging + OpenTelemetry)
+
+```csharp
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.SetMinimumLevel(LogLevel.Information);
+});
+
+// Configure OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("MyHealthCheckService", serviceVersion: "1.0.0"))
+    .WithTracing(tracing => tracing
+        .AddSource("SimpleAppMetrics")
+        .AddAspNetCoreInstrumentation()
+        .AddConsoleExporter()
+        .AddOtlpExporter());
+
+// Register tests
+builder.Services.AddTransient<ITest, DatabaseHealthCheck>();
+builder.Services.AddTransient<ITest, RedisHealthCheck>();
+
+// Register SimpleAppMetrics - logging and tracing work automatically!
+builder.Services.AddDefaultTestRunner()
+    .WithTestResultHelper()
+    .Build();
+
+var app = builder.Build();
+app.Run();
+```
+
 ## Health Check Integration
 
 ### Register Health Check
 
 ```csharp
-builder.Services
-    .AddDefaultTestRunner()
+builder.Services.AddDefaultTestRunner()
     .WithTestResultHelper()
     .Build();
 
@@ -283,85 +361,6 @@ app.MapHealthChecks("/health", new HealthCheckOptions
     }
 });
 ```
-
-## Logging Output Examples
-
-When logging is enabled, you'll see structured logs like:
-
-```
-[12:00:00 INF] Starting test execution for 3 tests
-[12:00:00 DBG] Executing test: DatabaseHealthCheck
-[12:00:00 INF] Test DatabaseHealthCheck completed with status Pass in 150ms
-[12:00:00 DBG] Executing test: RedisHealthCheck
-[12:00:00 ERR] Test RedisHealthCheck completed with status Fail in 200ms
-[12:00:00 ERR] Test RedisHealthCheck exception: System.TimeoutException: Connection timeout
-[12:00:00 DBG] Executing test: ApiHealthCheck
-[12:00:00 INF] Test ApiHealthCheck completed with status Pass in 100ms
-[12:00:01 INF] Test run completed: 3 total, 2 passed, 1 failed, 0 fatal in 450ms
-```
-
-## OpenTelemetry Tracing
-
-SimpleAppMetrics uses the built-in .NET `ActivitySource` API for distributed tracing. No external OpenTelemetry packages are required by the library itself.
-
-To enable trace collection, configure OpenTelemetry in your application:
-
-```csharp
-using OpenTelemetry.Trace;
-
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
-        .AddConsoleExporter());
-```
-
-When configured, each test run creates distributed traces:
-
-```
-Trace: TestRunner.SafeStartAsync (450ms)
-├── Test.DatabaseHealthCheck (150ms)
-│   └── Tags: test.name=DatabaseHealthCheck, test.status=Pass, test.duration_ms=150
-├── Test.RedisHealthCheck (200ms)
-│   └── Tags: test.name=RedisHealthCheck, test.status=Fail, test.duration_ms=200
-└── Test.ApiHealthCheck (100ms)
-    └── Tags: test.name=ApiHealthCheck, test.status=Pass, test.duration_ms=100
-```
-
-View traces in:
-- **Jaeger**: http://localhost:16686
-- **Zipkin**: http://localhost:9411
-- **Azure Application Insights**
-- **AWS X-Ray**
-- **Google Cloud Trace**
-- **Datadog**
-- **New Relic**
-
-### Complete OpenTelemetry Setup Example
-
-```csharp
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Configure OpenTelemetry with Jaeger
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource
-        .AddService("MyHealthCheckService", serviceVersion: "1.0.0"))
-    .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")        // SimpleAppMetrics traces
-        .AddAspNetCoreInstrumentation()       // HTTP request traces
-        .AddHttpClientInstrumentation()       // HTTP client traces
-        .AddOtlpExporter(options =>           // Export to Jaeger
-        {
-            options.Endpoint = new Uri("http://localhost:4317");
-        }));
-
-// Register SimpleAppMetrics
-builder.Services.AddDefaultTestRunner();
-```
-
-**Note**: The activity source name is `"SimpleAppMetrics"` with version `"2.1.0"`.
 
 ## Using TestResultHelper
 
@@ -524,7 +523,7 @@ builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService("HealthCheckService"))
     .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
+        .AddSource("SimpleAppMetrics")
         .AddAspNetCoreInstrumentation()
         .AddConsoleExporter());
 
@@ -534,11 +533,8 @@ builder.Services.AddTransient<ITest, RedisHealthCheck>();
 builder.Services.AddTransient<ITest, ApiHealthCheck>();
 
 // Configure SimpleAppMetrics
-builder.Services
-    .AddDefaultTestRunner()
+builder.Services.AddDefaultTestRunner()
     .WithTestResultHelper()
-    .WithLogging()
-    .WithOpenTelemetry()
     .Build();
 
 // Add health checks
@@ -577,15 +573,17 @@ app.Run();
 ### v2.1.0 - Logging and OpenTelemetry Support
 
 #### New Features
-- **Added**: Optional `ILogger<DefaultTestRunner>` integration for structured logging
-- **Added**: OpenTelemetry distributed tracing support via `ActivitySource`
-- **Added**: `WithLogging()` / `WithoutLogging()` builder methods
-- **Added**: `WithOpenTelemetry()` / `WithoutOpenTelemetry()` builder methods
+- **Added**: Automatic `ILogger<DefaultTestRunner>` integration for structured logging
+- **Added**: Automatic OpenTelemetry distributed tracing support via `ActivitySource`
 - **Added**: Automatic parent-child activity (span) relationships for distributed tracing
 - **Added**: Rich activity tags: `test.name`, `test.status`, `test.duration_ms`, `test.count`
 
+#### How It Works
+- **Logging**: Automatically enabled if `ILogger` is registered in your application via dependency injection
+- **OpenTelemetry**: Automatically creates traces using built-in .NET `ActivitySource` - configure OpenTelemetry in your app to collect them
+
 #### Improvements
-- Test execution now creates distributed traces with hierarchical spans
+- Test execution creates distributed traces with hierarchical spans
 - Different log levels based on test status (Critical, Error, Warning, Information)
 - Structured logging with test names, statuses, and durations
 - Exception details logged with full context
@@ -593,80 +591,31 @@ app.Run();
 - Zero performance overhead when logging/tracing is not configured
 - **No external OpenTelemetry dependencies** - uses built-in .NET `ActivitySource`
 
-#### Important Notes
-- SimpleAppMetrics uses the standard .NET `ActivitySource` API for tracing
-- Activity source name: `"SimpleAppMetrics"`, version: `"2.1.0"`
-- No NuGet dependencies required for OpenTelemetry support - it's built into .NET!
-- Users configure OpenTelemetry in their application using `.AddSource("SimpleAppMetrics")`
+#### Configuration
 
-#### Example: Enable Logging
-
+**Logging** - automatically used if registered:
 ```csharp
-// Add logging to your application
+// Configure logging in your application
 builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();
     logging.SetMinimumLevel(LogLevel.Information);
 });
 
-// Register test runner with logging enabled
-builder.Services
-    .AddDefaultTestRunner()
-    .WithLogging()
-    .Build();
+// SimpleAppMetrics will automatically use it
+builder.Services.AddDefaultTestRunner();
 ```
 
-#### Example: Enable OpenTelemetry
-
+**OpenTelemetry** - automatically creates traces if you configure collection:
 ```csharp
-// Install required packages (in your application, not required by SimpleAppMetrics):
-// dotnet add package OpenTelemetry.Exporter.Console
-// dotnet add package OpenTelemetry.Extensions.Hosting
-
 // Configure OpenTelemetry in your application
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
-        .AddConsoleExporter()            // Export to console
-        .AddOtlpExporter());             // Export to Jaeger/Zipkin/etc
+        .AddConsoleExporter());
 
-// SimpleAppMetrics configuration
-builder.Services
-    .AddDefaultTestRunner()
-    .WithOpenTelemetry()  // Optional - has no effect on tracing, kept for API consistency
-    .Build();
-```
-
-**Note**: The `WithOpenTelemetry()` builder method is optional and doesn't affect functionality. SimpleAppMetrics always creates activities via `ActivitySource`. Your OpenTelemetry configuration (`.AddSource("SimpleAppMetrics")`) determines whether traces are collected.
-
-#### Example: Enable Both
-
-```csharp
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Logging
-builder.Logging.AddConsole();
-
-// OpenTelemetry with OTLP exporter (Jaeger, Zipkin, etc.)
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService("MyService"))
-    .WithTracing(tracing => tracing
-        .AddSource("SimpleAppMetrics")  // Subscribe to SimpleAppMetrics traces
-        .AddAspNetCoreInstrumentation()
-        .AddOtlpExporter(options =>
-        {
-            options.Endpoint = new Uri("http://localhost:4317");
-        }));
-
-// SimpleAppMetrics with logging
-builder.Services
-    .AddDefaultTestRunner()
-    .WithTestResultHelper()
-    .WithLogging()
-    .Build();
+// SimpleAppMetrics will automatically create traces
+builder.Services.AddDefaultTestRunner();
 ```
 
 ### v2.0.1 - Breaking Changes

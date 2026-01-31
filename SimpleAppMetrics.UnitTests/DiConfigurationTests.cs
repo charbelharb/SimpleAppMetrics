@@ -53,8 +53,6 @@ public class DiConfigurationTests
         services.AddDefaultTestRunner(options =>
         {
             options.UseTestResultHelper = true;
-            options.EnableLogging = true;
-            options.EnableOpenTelemetry = true;
         });
 
         var provider = services.BuildServiceProvider();
@@ -72,8 +70,6 @@ public class DiConfigurationTests
         // Act
         services.AddDefaultTestRunner()
             .WithTestResultHelper()
-            .WithLogging()
-            .WithOpenTelemetry()
             .Build();
 
         var provider = services.BuildServiceProvider();
