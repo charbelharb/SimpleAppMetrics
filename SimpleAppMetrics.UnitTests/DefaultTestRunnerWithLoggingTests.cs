@@ -66,7 +66,7 @@ public class DefaultTestRunnerWithLoggingTests
         var runner = new DefaultTestRunner(tests, logger);
 
         // Act
-        await runner.StartAsync();
+        await runner.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         logger.Received().Log(
@@ -114,7 +114,7 @@ public class DefaultTestRunnerWithLoggingTests
         var runner = new DefaultTestRunner(tests, logger);
 
         // Act
-        await runner.SafeStartAsync();
+        await runner.SafeStartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         logger.Received().Log(
