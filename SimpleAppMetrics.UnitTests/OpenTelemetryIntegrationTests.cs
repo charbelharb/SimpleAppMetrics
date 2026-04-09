@@ -42,7 +42,7 @@ public class OpenTelemetryIntegrationTests
         ActivitySource.AddActivityListener(listener);
 
         // Act
-        await runner.StartAsync();
+        await runner.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var activity = activities.FirstOrDefault(a => a.DisplayName == "StartAsync");
@@ -84,7 +84,7 @@ public class OpenTelemetryIntegrationTests
         ActivitySource.AddActivityListener(listener);
 
         // Act
-        await runner.SafeStartAsync();
+        await runner.SafeStartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var activity = activities.FirstOrDefault(a => a.DisplayName == "SafeStartAsync");
@@ -286,7 +286,7 @@ public class OpenTelemetryIntegrationTests
         ActivitySource.AddActivityListener(listener);
 
         // Act
-        await runner.StartAsync();
+        await runner.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Contains(activities, a => a.DisplayName.StartsWith("Test."));
@@ -321,7 +321,7 @@ public class OpenTelemetryIntegrationTests
         var runner = new DefaultTestRunner(tests);
 
         // Act - No listener registered
-        var exception = await Record.ExceptionAsync(async () => await runner.StartAsync());
+        var exception = await Record.ExceptionAsync(async () => await runner.StartAsync(TestContext.Current.CancellationToken));
 
         // Assert - Should work fine without throwing
         Assert.Null(exception);

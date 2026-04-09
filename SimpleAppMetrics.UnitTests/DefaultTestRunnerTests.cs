@@ -38,7 +38,7 @@ public class DefaultTestRunnerTests
         using (defaultRunner)
         {
             // Act
-            var result = await defaultRunner.StartAsync();
+            var result = await defaultRunner.StartAsync(TestContext.Current.CancellationToken);
         
             // Assert
             Assert.NotNull(result);
@@ -75,7 +75,7 @@ public class DefaultTestRunnerTests
         using (defaultRunner)
         {
             // Assert
-            await Assert.ThrowsAsync<Exception>(() => defaultRunner.StartAsync());
+            await Assert.ThrowsAsync<Exception>(() => defaultRunner.StartAsync(TestContext.Current.CancellationToken));
         }
     }
     
@@ -138,7 +138,7 @@ public class DefaultTestRunnerTests
         using (defaultRunner)
         {
             // Act
-            var result = await defaultRunner.SafeStartAsync();
+            var result = await defaultRunner.SafeStartAsync(TestContext.Current.CancellationToken);
         
             // Assert
             Assert.NotNull(result);
@@ -160,7 +160,7 @@ public class DefaultTestRunnerTests
         using (defaultRunner)
         {
             // Assert
-            var exception = await Record.ExceptionAsync(() =>  defaultRunner.SafeStartAsync());
+            var exception = await Record.ExceptionAsync(() =>  defaultRunner.SafeStartAsync(TestContext.Current.CancellationToken));
             Assert.Null(exception);
             var result = defaultRunner.LastRunResults;
             Assert.NotEmpty(result);

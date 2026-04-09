@@ -164,7 +164,7 @@ public class TestResultHelperTests
 
         // Act
         fakeTimeProvider.Advance(TimeSpan.FromMilliseconds(150));
-        var result = await helper.RunWithTimingAsync(mockTest);
+        var result = await helper.RunWithTimingAsync(mockTest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result.StartDate);
@@ -210,7 +210,7 @@ public class TestResultHelperTests
         mockTest.RunAsync(Arg.Any<CancellationToken>()).Returns(testResult);
 
         // Act
-        var result = await helper.RunWithTimingAsync(mockTest);
+        var result = await helper.RunWithTimingAsync(mockTest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(existingStartDate, result.StartDate);
@@ -286,7 +286,7 @@ public class TestResultHelperTests
         });
 
         // Act
-        var (result, elapsed) = await helper.MeasureExecutionAsync(mockTest);
+        var (result, elapsed) = await helper.MeasureExecutionAsync(mockTest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -336,7 +336,7 @@ public class TestResultHelperTests
         });
 
         // Act
-        var (result, elapsed) = await helper.MeasureExecutionAsync(mockTest);
+        var (result, elapsed) = await helper.MeasureExecutionAsync(mockTest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(existingElapsed, result.Elapsed);
@@ -368,7 +368,7 @@ public class TestResultHelperTests
         var realTest = new SlowTest(fakeTimeProvider, TimeSpan.FromMilliseconds(125));
 
         // Act
-        var (result, elapsed) = await helper.MeasureExecutionAsync(realTest);
+        var (result, elapsed) = await helper.MeasureExecutionAsync(realTest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(TestResultStatus.Pass, result.Status);
@@ -405,7 +405,7 @@ public class TestResultHelperTests
         mockTest.RunAsync(Arg.Any<CancellationToken>()).Returns(testResult);
 
         // Act
-        await helper.RunWithTimingAsync(mockTest);
+        await helper.RunWithTimingAsync(mockTest, TestContext.Current.CancellationToken);
 
         // Assert
         await mockTest.Received(1).RunAsync(Arg.Any<CancellationToken>());

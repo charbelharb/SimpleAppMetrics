@@ -21,7 +21,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Healthy, result.Status);
@@ -45,7 +45,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Unhealthy, result.Status);
@@ -67,7 +67,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Unhealthy, result.Status);
@@ -93,7 +93,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Degraded, result.Status);
@@ -119,7 +119,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Degraded, result.Status);
@@ -139,7 +139,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Unhealthy, result.Status);
@@ -166,7 +166,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.Data.ContainsKey("ProblemTests"));
@@ -190,7 +190,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Unhealthy, result.Status);
@@ -244,7 +244,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(5, result.Data["TotalTests"]);
@@ -264,7 +264,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Healthy, result.Status);
@@ -296,7 +296,7 @@ public class TestRunnerHealthCheckTests
         var healthCheck = new TestRunnerHealthCheck(mockRunner);
 
         // Act
-        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext(), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HealthStatus.Unhealthy, result.Status);

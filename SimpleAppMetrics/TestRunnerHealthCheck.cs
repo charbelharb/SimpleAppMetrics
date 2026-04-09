@@ -32,7 +32,7 @@ public class TestRunnerHealthCheck : IHealthCheck
 
             // Check for fatal errors first
             var fatalResults = results.Where(r => r.IsFatal()).ToList();
-            if (fatalResults.Any())
+            if (fatalResults.Count != 0)
             {
                 return HealthCheckResult.Unhealthy(
                     description: "Fatal test failures detected",
@@ -41,7 +41,7 @@ public class TestRunnerHealthCheck : IHealthCheck
 
             // Check for failures
             var failedResults = results.Where(r => r.IsFailure()).ToList();
-            if (failedResults.Any())
+            if (failedResults.Count != 0)
             {
                 return HealthCheckResult.Unhealthy(
                     description: "Test failures detected",
@@ -50,7 +50,7 @@ public class TestRunnerHealthCheck : IHealthCheck
 
             // Check for degraded performance
             var degradedResults = results.Where(r => r.IsDegraded()).ToList();
-            if (degradedResults.Any())
+            if (degradedResults.Count != 0)
             {
                 return HealthCheckResult.Degraded(
                     description: "Performance degraded",
@@ -59,7 +59,7 @@ public class TestRunnerHealthCheck : IHealthCheck
 
             // Check for warnings
             var warningResults = results.Where(r => r.HasWarnings()).ToList();
-            if (warningResults.Any())
+            if (warningResults.Count != 0)
             {
                 return HealthCheckResult.Degraded(
                     description: "Warnings detected",
@@ -79,7 +79,7 @@ public class TestRunnerHealthCheck : IHealthCheck
         }
     }
 
-    private static IReadOnlyDictionary<string, object> CreateHealthData(
+    private static Dictionary<string, object> CreateHealthData(
         IList<ITestResult> allResults,
         IList<ITestResult>? problemResults)
     {
